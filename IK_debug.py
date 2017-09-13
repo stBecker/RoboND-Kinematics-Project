@@ -2,6 +2,7 @@ from sympy import *
 from time import time
 from mpmath import radians
 import tf
+import numpy as np
 
 '''
 Format of test case is [ [[EE position],[EE orientation as quaternions]],[WC location],[joint angles]]
@@ -37,7 +38,7 @@ test_cases = {1: [[[2.16135, -1.42635, 1.55109],
                   [-1.1726, -1.1675, 1.047],
                   [-2.36, 0.11, 0.53, 1.29, -1.80, 5.64]],
               0: [[[2.1529, 0, 1.9465],
-                   [0, -0.00014835, 0, 1]],
+                   [0, 0, 0, 1]],
                   [1.8499, 0, 1.9464],
                   [0, 0, 0, 0, 0, 0]],
               }
@@ -134,6 +135,9 @@ def test_code(test_case):
         T0_5 = Matrix([[(sin(q1)*sin(q4) + sin(q2 + q3)*cos(q1)*cos(q4))*cos(q5) + sin(q5)*cos(q1)*cos(q2 + q3), -(sin(q1)*sin(q4) + sin(q2 + q3)*cos(q1)*cos(q4))*sin(q5) + cos(q1)*cos(q5)*cos(q2 + q3), -sin(q1)*cos(q4) + sin(q4)*sin(q2 + q3)*cos(q1), (1.25*sin(q2) - 0.054*sin(q2 + q3) + 1.5*cos(q2 + q3) + 0.35)*cos(q1)], [(sin(q1)*sin(q2 + q3)*cos(q4) - sin(q4)*cos(q1))*cos(q5) + sin(q1)*sin(q5)*cos(q2 + q3), -(sin(q1)*sin(q2 + q3)*cos(q4) - sin(q4)*cos(q1))*sin(q5) + sin(q1)*cos(q5)*cos(q2 + q3), sin(q1)*sin(q4)*sin(q2 + q3) + cos(q1)*cos(q4), (1.25*sin(q2) - 0.054*sin(q2 + q3) + 1.5*cos(q2 + q3) + 0.35)*sin(q1)], [-sin(q5)*sin(q2 + q3) + cos(q4)*cos(q5)*cos(q2 + q3), -sin(q5)*cos(q4)*cos(q2 + q3) - sin(q2 + q3)*cos(q5), sin(q4)*cos(q2 + q3), -1.5*sin(q2 + q3) + 1.25*cos(q2) - 0.054*cos(q2 + q3) + 0.75], [0, 0, 0, 1]])
         T_total = Matrix([[-(sin(q1)*sin(q4) + sin(q2 + q3)*cos(q1)*cos(q4))*sin(q5) + cos(q1)*cos(q5)*cos(q2 + q3), ((sin(q1)*sin(q4) + sin(q2 + q3)*cos(q1)*cos(q4))*cos(q5) + sin(q5)*cos(q1)*cos(q2 + q3))*sin(q6) - (sin(q1)*cos(q4) - sin(q4)*sin(q2 + q3)*cos(q1))*cos(q6), ((sin(q1)*sin(q4) + sin(q2 + q3)*cos(q1)*cos(q4))*cos(q5) + sin(q5)*cos(q1)*cos(q2 + q3))*cos(q6) + (sin(q1)*cos(q4) - sin(q4)*sin(q2 + q3)*cos(q1))*sin(q6), -0.303*(sin(q1)*sin(q4) + sin(q2 + q3)*cos(q1)*cos(q4))*sin(q5) + (1.25*sin(q2) - 0.054*sin(q2 + q3) + 1.5*cos(q2 + q3) + 0.35)*cos(q1) + 0.303*cos(q1)*cos(q5)*cos(q2 + q3)], [-(sin(q1)*sin(q2 + q3)*cos(q4) - sin(q4)*cos(q1))*sin(q5) + sin(q1)*cos(q5)*cos(q2 + q3), ((sin(q1)*sin(q2 + q3)*cos(q4) - sin(q4)*cos(q1))*cos(q5) + sin(q1)*sin(q5)*cos(q2 + q3))*sin(q6) + (sin(q1)*sin(q4)*sin(q2 + q3) + cos(q1)*cos(q4))*cos(q6), ((sin(q1)*sin(q2 + q3)*cos(q4) - sin(q4)*cos(q1))*cos(q5) + sin(q1)*sin(q5)*cos(q2 + q3))*cos(q6) - (sin(q1)*sin(q4)*sin(q2 + q3) + cos(q1)*cos(q4))*sin(q6), -0.303*(sin(q1)*sin(q2 + q3)*cos(q4) - sin(q4)*cos(q1))*sin(q5) + (1.25*sin(q2) - 0.054*sin(q2 + q3) + 1.5*cos(q2 + q3) + 0.35)*sin(q1) + 0.303*sin(q1)*cos(q5)*cos(q2 + q3)], [-sin(q5)*cos(q4)*cos(q2 + q3) - sin(q2 + q3)*cos(q5), -(sin(q5)*sin(q2 + q3) - cos(q4)*cos(q5)*cos(q2 + q3))*sin(q6) + sin(q4)*cos(q6)*cos(q2 + q3), -(sin(q5)*sin(q2 + q3) - cos(q4)*cos(q5)*cos(q2 + q3))*cos(q6) - sin(q4)*sin(q6)*cos(q2 + q3), -0.303*sin(q5)*cos(q4)*cos(q2 + q3) - 0.303*sin(q2 + q3)*cos(q5) - 1.5*sin(q2 + q3) + 1.25*cos(q2) - 0.054*cos(q2 + q3) + 0.75], [0, 0, 0, 1]])
         R_corr = Matrix([[0, 0, 1, 0], [0, -1, 0, 0], [1, 0, 0, 0], [0, 0, 0, 1]])
+        T0_3 = Matrix([[sin(q2 + q3)*cos(q1), cos(q1)*cos(q2 + q3), -sin(q1), (1.25*sin(q2) + 0.35)*cos(q1)], [sin(q1)*sin(q2 + q3), sin(q1)*cos(q2 + q3), cos(q1), (1.25*sin(q2) + 0.35)*sin(q1)], [cos(q2 + q3), -sin(q2 + q3), 0, 1.25*cos(q2) + 0.75], [0, 0, 0, 1]])
+        T0_6 = Matrix([[((sin(q1)*sin(q4) + sin(q2 + q3)*cos(q1)*cos(q4))*cos(q5) + sin(q5)*cos(q1)*cos(q2 + q3))*cos(q6) + (sin(q1)*cos(q4) - sin(q4)*sin(q2 + q3)*cos(q1))*sin(q6), -((sin(q1)*sin(q4) + sin(q2 + q3)*cos(q1)*cos(q4))*cos(q5) + sin(q5)*cos(q1)*cos(q2 + q3))*sin(q6) + (sin(q1)*cos(q4) - sin(q4)*sin(q2 + q3)*cos(q1))*cos(q6), -(sin(q1)*sin(q4) + sin(q2 + q3)*cos(q1)*cos(q4))*sin(q5) + cos(q1)*cos(q5)*cos(q2 + q3), (1.25*sin(q2) - 0.054*sin(q2 + q3) + 1.5*cos(q2 + q3) + 0.35)*cos(q1)], [((sin(q1)*sin(q2 + q3)*cos(q4) - sin(q4)*cos(q1))*cos(q5) + sin(q1)*sin(q5)*cos(q2 + q3))*cos(q6) - (sin(q1)*sin(q4)*sin(q2 + q3) + cos(q1)*cos(q4))*sin(q6), -((sin(q1)*sin(q2 + q3)*cos(q4) - sin(q4)*cos(q1))*cos(q5) + sin(q1)*sin(q5)*cos(q2 + q3))*sin(q6) - (sin(q1)*sin(q4)*sin(q2 + q3) + cos(q1)*cos(q4))*cos(q6), -(sin(q1)*sin(q2 + q3)*cos(q4) - sin(q4)*cos(q1))*sin(q5) + sin(q1)*cos(q5)*cos(q2 + q3), (1.25*sin(q2) - 0.054*sin(q2 + q3) + 1.5*cos(q2 + q3) + 0.35)*sin(q1)], [-(sin(q5)*sin(q2 + q3) - cos(q4)*cos(q5)*cos(q2 + q3))*cos(q6) - sin(q4)*sin(q6)*cos(q2 + q3), (sin(q5)*sin(q2 + q3) - cos(q4)*cos(q5)*cos(q2 + q3))*sin(q6) - sin(q4)*cos(q6)*cos(q2 + q3), -sin(q5)*cos(q4)*cos(q2 + q3) - sin(q2 + q3)*cos(q5), -1.5*sin(q2 + q3) + 1.25*cos(q2) - 0.054*cos(q2 + q3) + 0.75], [0, 0, 0, 1]])
+        R3_6 = Matrix([[-1.0*sin(q4)*sin(q6) + 1.0*cos(q4)*cos(q5)*cos(q6), -1.0*sin(q4)*cos(q6) - 1.0*sin(q6)*cos(q4)*cos(q5), -1.0*sin(q5)*cos(q4)], [sin(q5)*cos(q6), -sin(q5)*sin(q6), cos(q5)], [-sin(q4)*cos(q5)*cos(q6) - sin(q6)*cos(q4), sin(q4)*sin(q6)*cos(q5) - cos(q4)*cos(q6), sin(q4)*sin(q5)]])
 
     else:
         # Define Modified DH Transformation matrix
@@ -222,78 +226,99 @@ def test_code(test_case):
     d6 = 0
     ee_length = 0.303
     Rrpy = Rot('Z', yaw) * Rot('Y', pitch) * Rot('X', roll) * R_corr
+    # Rrpy = rot_axis3(yaw) * rot_axis2(pitch) * rot_axis1(roll) * R_corr
     nx, ny, nz = Rrpy[:3, 2]
     wx = px - (d6 + ee_length) * nx
     wy = py - (d6 + ee_length) * ny
     wz = pz - (d6 + ee_length) * nz
 
     # Calculate joint angles using Geometric IK method
-    A = s[a2]
-    B = s[d4]
-
     theta1 = atan2(wy, wx)
 
-    C = sqrt(wz ** 2 + wy ** 2)
-    if C > A + B:
-        # no valid position possible
-        print("invalid")
+    # link2 origin as offset
+    pz = wz - s[d1]
+    py = wy - s[a1]
+    l2 = s[a2]
+    l3 = s[d4]
+    max_length_of_arms = l2 + l3
+    beta = atan2(pz, py)
+    lp = sqrt(pz ** 2 + py ** 2)
 
-    theta3 = asin((wz ** 2 + wy ** 2 - A ** 2 - B ** 2) / 2 * A * B)
+    if lp == max_length_of_arms:
+        # arms must be fully extended
+        theta3 = pi/2
+        theta2 = pi/2 - beta
+        print("Arm fully extended")
 
+    elif lp > max_length_of_arms:
+        # point is out of reach
+        theta3 = 0
+        theta2 = 0
+        print("WC coordinates are out of reach: %s %s %s" % (wx, wy, wz))
 
-    # beta = atan2(wz, wy)
-    beta = atan2(wy, wz)
-    b = acos((wz ** 2 + wy ** 2 + A ** 2 - B ** 2) / 2 * A * C)
+    else:
+        c3 = (py**2 + pz**2 - l2**2 - l3**2)/(2*l2*l3)
+        s3 = sqrt(1 - c3**2)
+        s3_alt = - s3
+        theta3 = atan2(s3, c3)
+        theta3_alt = atan2(s3_alt, c3)
 
-    # print(beta)
-    # print(b)
+        b = atan2(l3 * sin(theta3), l2 + l3 * cos(theta3))
+        b_alt = atan2(l3 * sin(theta3_alt), l2 + l3 * cos(theta3_alt))
 
-    theta2 = pi / 2 - beta - b
-    theta2 = b + beta
-    # theta3 = C - pi / 2
+        theta2 = beta - b
+        theta2_alt = beta - b_alt
 
-    # if theta3 < 0:
-    #     theta2 = beta + b
-    # else:
-    #     theta2 = beta - b
+        # adjust theta2
+        theta2 = pi/2 - theta2
+        theta2_alt = pi/2 - theta2_alt
 
-    # B = sqrt(wz ** 2 + wy ** 2)
-    # wc1 = acos(wy / b)
-    # a = acos(a2 / b)
-    # theta2 = 42
-    # z3 = sin(theta2) * a2
-    # x3 = cos(theta2) * a2
-    # theta3 = sin((wz - z3) / d4)
-    # # theta3 = cos((wx - x3)/d4)
+        # adjust theta3
+        theta3 = theta3 - pi/2
+        theta3_alt = theta3_alt - pi/2
 
-    #Matrix([[-0.997016358482613*(sin(q1)/(sin(q1)**2/cos(q1) + cos(q1)) + sin(q1)*cos(q2 + q3)**2/((sin(q1)**2/cos(q1) + cos(q1))*(-sin(q2 + q3) - cos(q2 + q3)**2/sin(q2 + q3))*sin(q2 + q3)))/(sin(q2 + q3)*cos(q1)) + 0.0228997426720887*(-(-cos(q2 + q3)/(sin(q2 + q3)*cos(q1)) + sin(q1)**2*cos(q2 + q3)/((sin(q1)**2/cos(q1) + cos(q1))*sin(q2 + q3)*cos(q1)**2))*cos(q1)*cos(q2 + q3)/(-sin(q2 + q3) - cos(q2 + q3)**2/sin(q2 + q3)) + 1 - sin(q1)**2/((sin(q1)**2/cos(q1) + cos(q1))*cos(q1)))/(sin(q2 + q3)*cos(q1)) + 0.0737155526576441*cos(q2 + q3)/((-sin(q2 + q3) - cos(q2 + q3)**2/sin(q2 + q3))*sin(q2 + q3)), 0.0541428488017548*(sin(q1)/(sin(q1)**2/cos(q1) + cos(q1)) + sin(q1)*cos(q2 + q3)**2/((sin(q1)**2/cos(q1) + cos(q1))*(-sin(q2 + q3) - cos(q2 + q3)**2/sin(q2 + q3))*sin(q2 + q3)))/(sin(q2 + q3)*cos(q1)) - 0.473197751193797*(-(-cos(q2 + q3)/(sin(q2 + q3)*cos(q1)) + sin(q1)**2*cos(q2 + q3)/((sin(q1)**2/cos(q1) + cos(q1))*sin(q2 + q3)*cos(q1)**2))*cos(q1)*cos(q2 + q3)/(-sin(q2 + q3) - cos(q2 + q3)**2/sin(q2 + q3)) + 1 - sin(q1)**2/((sin(q1)**2/cos(q1) + cos(q1))*cos(q1)))/(sin(q2 + q3)*cos(q1)) + 0.879290873482014*cos(q2 + q3)/((-sin(q2 + q3) - cos(q2 + q3)**2/sin(q2 + q3))*sin(q2 + q3)), 0.0550175684822593*(sin(q1)/(sin(q1)**2/cos(q1) + cos(q1)) + sin(q1)*cos(q2 + q3)**2/((sin(q1)**2/cos(q1) + cos(q1))*(-sin(q2 + q3) - cos(q2 + q3)**2/sin(q2 + q3))*sin(q2 + q3)))/(sin(q2 + q3)*cos(q1)) + 0.880658554747914*(-(-cos(q2 + q3)/(sin(q2 + q3)*cos(q1)) + sin(q1)**2*cos(q2 + q3)/((sin(q1)**2/cos(q1) + cos(q1))*sin(q2 + q3)*cos(q1)**2))*cos(q1)*cos(q2 + q3)/(-sin(q2 + q3) - cos(q2 + q3)**2/sin(q2 + q3)) + 1 - sin(q1)**2/((sin(q1)**2/cos(q1) + cos(q1))*cos(q1)))/(sin(q2 + q3)*cos(q1)) + 0.470546041432307*cos(q2 + q3)/((-sin(q2 + q3) - cos(q2 + q3)**2/sin(q2 + q3))*sin(q2 + q3))], [0.0228997426720887*(-cos(q2 + q3)/(sin(q2 + q3)*cos(q1)) + sin(q1)**2*cos(q2 + q3)/((sin(q1)**2/cos(q1) + cos(q1))*sin(q2 + q3)*cos(q1)**2))/(-sin(q2 + q3) - cos(q2 + q3)**2/sin(q2 + q3)) - 0.0737155526576441/(-sin(q2 + q3) - cos(q2 + q3)**2/sin(q2 + q3)) + 0.997016358482613*sin(q1)*cos(q2 + q3)/((sin(q1)**2/cos(q1) + cos(q1))*(-sin(q2 + q3) - cos(q2 + q3)**2/sin(q2 + q3))*sin(q2 + q3)*cos(q1)), -0.473197751193797*(-cos(q2 + q3)/(sin(q2 + q3)*cos(q1)) + sin(q1)**2*cos(q2 + q3)/((sin(q1)**2/cos(q1) + cos(q1))*sin(q2 + q3)*cos(q1)**2))/(-sin(q2 + q3) - cos(q2 + q3)**2/sin(q2 + q3)) - 0.879290873482014/(-sin(q2 + q3) - cos(q2 + q3)**2/sin(q2 + q3)) - 0.0541428488017548*sin(q1)*cos(q2 + q3)/((sin(q1)**2/cos(q1) + cos(q1))*(-sin(q2 + q3) - cos(q2 + q3)**2/sin(q2 + q3))*sin(q2 + q3)*cos(q1)), 0.880658554747914*(-cos(q2 + q3)/(sin(q2 + q3)*cos(q1)) + sin(q1)**2*cos(q2 + q3)/((sin(q1)**2/cos(q1) + cos(q1))*sin(q2 + q3)*cos(q1)**2))/(-sin(q2 + q3) - cos(q2 + q3)**2/sin(q2 + q3)) - 0.470546041432307/(-sin(q2 + q3) - cos(q2 + q3)**2/sin(q2 + q3)) - 0.0550175684822593*sin(q1)*cos(q2 + q3)/((sin(q1)**2/cos(q1) + cos(q1))*(-sin(q2 + q3) - cos(q2 + q3)**2/sin(q2 + q3))*sin(q2 + q3)*cos(q1))], [-0.0228997426720887*sin(q1)/((sin(q1)**2/cos(q1) + cos(q1))*cos(q1)) - 0.997016358482613/(sin(q1)**2/cos(q1) + cos(q1)), 0.473197751193797*sin(q1)/((sin(q1)**2/cos(q1) + cos(q1))*cos(q1)) + 0.0541428488017548/(sin(q1)**2/cos(q1) + cos(q1)), -0.880658554747914*sin(q1)/((sin(q1)**2/cos(q1) + cos(q1))*cos(q1)) + 0.0550175684822593/(sin(q1)**2/cos(q1) + cos(q1))]])
-    #Matrix([[(((sin(q1)*sin(q4) + sin(q2 + q3)*cos(q1)*cos(q4))*cos(q5) + sin(q5)*cos(q1)*cos(q2 + q3))*cos(q6) - (4*sin(q1)*sin(q4) - sin(q1)*cos(q4) + sin(q4)*sin(q2 + q3)*cos(q1) + 4*sin(q2 + q3)*cos(q1)*cos(q4))*sin(q6))*(-(-cos(q2 + q3)/(sin(q2 + q3)*cos(q1)) + sin(q1)**2*cos(q2 + q3)/((sin(q1)**2/cos(q1) + cos(q1))*sin(q2 + q3)*cos(q1)**2))*cos(q1)*cos(q2 + q3)/(-sin(q2 + q3) - cos(q2 + q3)**2/sin(q2 + q3)) + 1 - sin(q1)**2/((sin(q1)**2/cos(q1) + cos(q1))*cos(q1)))/(sin(q2 + q3)*cos(q1)) + (((sin(q1)*sin(q2 + q3)*cos(q4) - sin(q4)*cos(q1))*cos(q5) + sin(q1)*sin(q5)*cos(q2 + q3))*cos(q6) - (sin(q1)*sin(q4)*sin(q2 + q3) + 4*sin(q1)*sin(q2 + q3)*cos(q4) - 4*sin(q4)*cos(q1) + cos(q1)*cos(q4))*sin(q6))*(sin(q1)/(sin(q1)**2/cos(q1) + cos(q1)) + sin(q1)*cos(q2 + q3)**2/((sin(q1)**2/cos(q1) + cos(q1))*(-sin(q2 + q3) - cos(q2 + q3)**2/sin(q2 + q3))*sin(q2 + q3)))/(sin(q2 + q3)*cos(q1)) - ((-sin(q5)*sin(q2 + q3) + cos(q4)*cos(q5)*cos(q2 + q3))*cos(q6) - (sin(q4) + 4*cos(q4))*sin(q6)*cos(q2 + q3))*cos(q2 + q3)/((-sin(q2 + q3) - cos(q2 + q3)**2/sin(q2 + q3))*sin(q2 + q3)), ((-(sin(q1)*sin(q4) + sin(q2 + q3)*cos(q1)*cos(q4))*cos(q5) - sin(q5)*cos(q1)*cos(q2 + q3))*sin(q6) - (4*sin(q1)*sin(q4) - sin(q1)*cos(q4) + sin(q4)*sin(q2 + q3)*cos(q1) + 4*sin(q2 + q3)*cos(q1)*cos(q4))*cos(q6))*(-(-cos(q2 + q3)/(sin(q2 + q3)*cos(q1)) + sin(q1)**2*cos(q2 + q3)/((sin(q1)**2/cos(q1) + cos(q1))*sin(q2 + q3)*cos(q1)**2))*cos(q1)*cos(q2 + q3)/(-sin(q2 + q3) - cos(q2 + q3)**2/sin(q2 + q3)) + 1 - sin(q1)**2/((sin(q1)**2/cos(q1) + cos(q1))*cos(q1)))/(sin(q2 + q3)*cos(q1)) + ((-(sin(q1)*sin(q2 + q3)*cos(q4) - sin(q4)*cos(q1))*cos(q5) - sin(q1)*sin(q5)*cos(q2 + q3))*sin(q6) - (sin(q1)*sin(q4)*sin(q2 + q3) + 4*sin(q1)*sin(q2 + q3)*cos(q4) - 4*sin(q4)*cos(q1) + cos(q1)*cos(q4))*cos(q6))*(sin(q1)/(sin(q1)**2/cos(q1) + cos(q1)) + sin(q1)*cos(q2 + q3)**2/((sin(q1)**2/cos(q1) + cos(q1))*(-sin(q2 + q3) - cos(q2 + q3)**2/sin(q2 + q3))*sin(q2 + q3)))/(sin(q2 + q3)*cos(q1)) - ((sin(q5)*sin(q2 + q3) - cos(q4)*cos(q5)*cos(q2 + q3))*sin(q6) - (sin(q4) + 4*cos(q4))*cos(q6)*cos(q2 + q3))*cos(q2 + q3)/((-sin(q2 + q3) - cos(q2 + q3)**2/sin(q2 + q3))*sin(q2 + q3)), (sin(q1)/(sin(q1)**2/cos(q1) + cos(q1)) + sin(q1)*cos(q2 + q3)**2/((sin(q1)**2/cos(q1) + cos(q1))*(-sin(q2 + q3) - cos(q2 + q3)**2/sin(q2 + q3))*sin(q2 + q3)))*((-sin(q1)*sin(q2 + q3)*cos(q4) + sin(q4)*cos(q1))*sin(q5) + (5*sin(q1)*sin(q2 + q3)*cos(q4) - 5*sin(q4)*cos(q1))*cos(q5) + 5*sin(q1)*sin(q5)*cos(q2 + q3) + sin(q1)*cos(q5)*cos(q2 + q3))/(sin(q2 + q3)*cos(q1)) + (-(-cos(q2 + q3)/(sin(q2 + q3)*cos(q1)) + sin(q1)**2*cos(q2 + q3)/((sin(q1)**2/cos(q1) + cos(q1))*sin(q2 + q3)*cos(q1)**2))*cos(q1)*cos(q2 + q3)/(-sin(q2 + q3) - cos(q2 + q3)**2/sin(q2 + q3)) + 1 - sin(q1)**2/((sin(q1)**2/cos(q1) + cos(q1))*cos(q1)))*((-sin(q1)*sin(q4) - sin(q2 + q3)*cos(q1)*cos(q4))*sin(q5) + (5*sin(q1)*sin(q4) + 5*sin(q2 + q3)*cos(q1)*cos(q4))*cos(q5) + 5*sin(q5)*cos(q1)*cos(q2 + q3) + cos(q1)*cos(q5)*cos(q2 + q3))/(sin(q2 + q3)*cos(q1)) - (-5*sin(q5)*sin(q2 + q3) - sin(q5)*cos(q4)*cos(q2 + q3) - sin(q2 + q3)*cos(q5) + 5*cos(q4)*cos(q5)*cos(q2 + q3))*cos(q2 + q3)/((-sin(q2 + q3) - cos(q2 + q3)**2/sin(q2 + q3))*sin(q2 + q3))], [(((sin(q1)*sin(q4) + sin(q2 + q3)*cos(q1)*cos(q4))*cos(q5) + sin(q5)*cos(q1)*cos(q2 + q3))*cos(q6) - (4*sin(q1)*sin(q4) - sin(q1)*cos(q4) + sin(q4)*sin(q2 + q3)*cos(q1) + 4*sin(q2 + q3)*cos(q1)*cos(q4))*sin(q6))*(-cos(q2 + q3)/(sin(q2 + q3)*cos(q1)) + sin(q1)**2*cos(q2 + q3)/((sin(q1)**2/cos(q1) + cos(q1))*sin(q2 + q3)*cos(q1)**2))/(-sin(q2 + q3) - cos(q2 + q3)**2/sin(q2 + q3)) - (((sin(q1)*sin(q2 + q3)*cos(q4) - sin(q4)*cos(q1))*cos(q5) + sin(q1)*sin(q5)*cos(q2 + q3))*cos(q6) - (sin(q1)*sin(q4)*sin(q2 + q3) + 4*sin(q1)*sin(q2 + q3)*cos(q4) - 4*sin(q4)*cos(q1) + cos(q1)*cos(q4))*sin(q6))*sin(q1)*cos(q2 + q3)/((sin(q1)**2/cos(q1) + cos(q1))*(-sin(q2 + q3) - cos(q2 + q3)**2/sin(q2 + q3))*sin(q2 + q3)*cos(q1)) + ((-sin(q5)*sin(q2 + q3) + cos(q4)*cos(q5)*cos(q2 + q3))*cos(q6) - (sin(q4) + 4*cos(q4))*sin(q6)*cos(q2 + q3))/(-sin(q2 + q3) - cos(q2 + q3)**2/sin(q2 + q3)), ((-(sin(q1)*sin(q4) + sin(q2 + q3)*cos(q1)*cos(q4))*cos(q5) - sin(q5)*cos(q1)*cos(q2 + q3))*sin(q6) - (4*sin(q1)*sin(q4) - sin(q1)*cos(q4) + sin(q4)*sin(q2 + q3)*cos(q1) + 4*sin(q2 + q3)*cos(q1)*cos(q4))*cos(q6))*(-cos(q2 + q3)/(sin(q2 + q3)*cos(q1)) + sin(q1)**2*cos(q2 + q3)/((sin(q1)**2/cos(q1) + cos(q1))*sin(q2 + q3)*cos(q1)**2))/(-sin(q2 + q3) - cos(q2 + q3)**2/sin(q2 + q3)) - ((-(sin(q1)*sin(q2 + q3)*cos(q4) - sin(q4)*cos(q1))*cos(q5) - sin(q1)*sin(q5)*cos(q2 + q3))*sin(q6) - (sin(q1)*sin(q4)*sin(q2 + q3) + 4*sin(q1)*sin(q2 + q3)*cos(q4) - 4*sin(q4)*cos(q1) + cos(q1)*cos(q4))*cos(q6))*sin(q1)*cos(q2 + q3)/((sin(q1)**2/cos(q1) + cos(q1))*(-sin(q2 + q3) - cos(q2 + q3)**2/sin(q2 + q3))*sin(q2 + q3)*cos(q1)) + ((sin(q5)*sin(q2 + q3) - cos(q4)*cos(q5)*cos(q2 + q3))*sin(q6) - (sin(q4) + 4*cos(q4))*cos(q6)*cos(q2 + q3))/(-sin(q2 + q3) - cos(q2 + q3)**2/sin(q2 + q3)), (-cos(q2 + q3)/(sin(q2 + q3)*cos(q1)) + sin(q1)**2*cos(q2 + q3)/((sin(q1)**2/cos(q1) + cos(q1))*sin(q2 + q3)*cos(q1)**2))*((-sin(q1)*sin(q4) - sin(q2 + q3)*cos(q1)*cos(q4))*sin(q5) + (5*sin(q1)*sin(q4) + 5*sin(q2 + q3)*cos(q1)*cos(q4))*cos(q5) + 5*sin(q5)*cos(q1)*cos(q2 + q3) + cos(q1)*cos(q5)*cos(q2 + q3))/(-sin(q2 + q3) - cos(q2 + q3)**2/sin(q2 + q3)) + (-5*sin(q5)*sin(q2 + q3) - sin(q5)*cos(q4)*cos(q2 + q3) - sin(q2 + q3)*cos(q5) + 5*cos(q4)*cos(q5)*cos(q2 + q3))/(-sin(q2 + q3) - cos(q2 + q3)**2/sin(q2 + q3)) - ((-sin(q1)*sin(q2 + q3)*cos(q4) + sin(q4)*cos(q1))*sin(q5) + (5*sin(q1)*sin(q2 + q3)*cos(q4) - 5*sin(q4)*cos(q1))*cos(q5) + 5*sin(q1)*sin(q5)*cos(q2 + q3) + sin(q1)*cos(q5)*cos(q2 + q3))*sin(q1)*cos(q2 + q3)/((sin(q1)**2/cos(q1) + cos(q1))*(-sin(q2 + q3) - cos(q2 + q3)**2/sin(q2 + q3))*sin(q2 + q3)*cos(q1))], [-(((sin(q1)*sin(q4) + sin(q2 + q3)*cos(q1)*cos(q4))*cos(q5) + sin(q5)*cos(q1)*cos(q2 + q3))*cos(q6) - (4*sin(q1)*sin(q4) - sin(q1)*cos(q4) + sin(q4)*sin(q2 + q3)*cos(q1) + 4*sin(q2 + q3)*cos(q1)*cos(q4))*sin(q6))*sin(q1)/((sin(q1)**2/cos(q1) + cos(q1))*cos(q1)) + (((sin(q1)*sin(q2 + q3)*cos(q4) - sin(q4)*cos(q1))*cos(q5) + sin(q1)*sin(q5)*cos(q2 + q3))*cos(q6) - (sin(q1)*sin(q4)*sin(q2 + q3) + 4*sin(q1)*sin(q2 + q3)*cos(q4) - 4*sin(q4)*cos(q1) + cos(q1)*cos(q4))*sin(q6))/(sin(q1)**2/cos(q1) + cos(q1)), -((-(sin(q1)*sin(q4) + sin(q2 + q3)*cos(q1)*cos(q4))*cos(q5) - sin(q5)*cos(q1)*cos(q2 + q3))*sin(q6) - (4*sin(q1)*sin(q4) - sin(q1)*cos(q4) + sin(q4)*sin(q2 + q3)*cos(q1) + 4*sin(q2 + q3)*cos(q1)*cos(q4))*cos(q6))*sin(q1)/((sin(q1)**2/cos(q1) + cos(q1))*cos(q1)) + ((-(sin(q1)*sin(q2 + q3)*cos(q4) - sin(q4)*cos(q1))*cos(q5) - sin(q1)*sin(q5)*cos(q2 + q3))*sin(q6) - (sin(q1)*sin(q4)*sin(q2 + q3) + 4*sin(q1)*sin(q2 + q3)*cos(q4) - 4*sin(q4)*cos(q1) + cos(q1)*cos(q4))*cos(q6))/(sin(q1)**2/cos(q1) + cos(q1)), -((-sin(q1)*sin(q4) - sin(q2 + q3)*cos(q1)*cos(q4))*sin(q5) + (5*sin(q1)*sin(q4) + 5*sin(q2 + q3)*cos(q1)*cos(q4))*cos(q5) + 5*sin(q5)*cos(q1)*cos(q2 + q3) + cos(q1)*cos(q5)*cos(q2 + q3))*sin(q1)/((sin(q1)**2/cos(q1) + cos(q1))*cos(q1)) + ((-sin(q1)*sin(q2 + q3)*cos(q4) + sin(q4)*cos(q1))*sin(q5) + (5*sin(q1)*sin(q2 + q3)*cos(q4) - 5*sin(q4)*cos(q1))*cos(q5) + 5*sin(q1)*sin(q5)*cos(q2 + q3) + sin(q1)*cos(q5)*cos(q2 + q3))/(sin(q1)**2/cos(q1) + cos(q1))]])
+    subs = {q1: theta1, q2: theta2, q3: theta3}
+    # subs = {q1: 0, q2: 0, q3: 0}
+    # subs = {q1: 0, q2: 0, q3: 0, q4: 0, q5: 0, q6: 0}
+    # subs = {q1: test_case[2][0], q2: test_case[2][1], q3: test_case[2][2], q4: test_case[2][3], q5: test_case[2][4],
+    #         q6: test_case[2][5]}
+    # subs = {q1: test_case[2][0], q2: test_case[2][1], q3: test_case[2][2]}
 
-    # Rrpy = Rrpy[:3,:3]
-    # R3_6rhs = R0_3.inv('LU') * Rrpy
-    # R3_6lhs = R0_3.inv('LU') * R0_6
-    #
-    # subs = {q1: theta1, q2: theta2, q3: theta3}
-    # R3_6rhs_n = R3_6rhs.evalf(subs=subs)
-    # R3_6lhs_n = simplify(R3_6lhs.evalf(subs=subs))
-    #
-    # theta4, theta5, theta6 = R3_6rhs_n[0, :]
+    R0_3 = T0_3[:3,:3]
+    R0_3_num = R0_3.evalf(subs=subs)
+    Rrpy3x3 = Rrpy[:3, :3]
 
+    R3_6_num = R0_3_num.inv('LU') * Rrpy3x3
+    if not use_precomputed_transforms:
+        R0_6 = T0_6[:3, :3]
+        R3_6 = R0_3.inv('LU') * R0_6
+        R3_6 = simplify(R3_6.evalf(subs=subs))
 
-    theta4, theta5, theta6 = 0,0,0
+    theta4 = atan2(R3_6_num[2, 2], - R3_6_num[0, 2])
+    theta5 = atan2(sqrt(R3_6_num[1, 0]**2 + (-R3_6_num[1, 1])**2), R3_6_num[1, 2])
+    theta6 = atan2(- R3_6_num[1, 1], R3_6_num[1, 0])
 
+    if theta4 == nan:
+        theta4 = 0
 
-    # theta1 = 0
-    # theta2 = 0
-    # theta3 = 0
-    # theta4 = 0
-    # theta5 = 0
-    # theta6 = 0
+    if theta6 == nan:
+        theta6 = 0
 
-    for i, t in enumerate([theta1, theta2, theta3, theta4, theta5, theta6]):
-        print("theta_%s = %s" % (i+1, t))
+    # pprint(R3_6.evalf(subs={q4: theta4, q5: theta5, q6: theta6}), wrap_line=False)
+    # pprint(R3_6.evalf(subs={q1: test_case[2][0], q2: test_case[2][1], q3: test_case[2][2], q4: test_case[2][3], q5: test_case[2][4],
+    #         q6: test_case[2][5]}), wrap_line=False)
 
-    ## 
+    # theta1 = test_case[2][0]
+    # theta2 = test_case[2][1]
+    # theta3 = test_case[2][2]
+    # theta4 = test_case[2][3]
+    # theta5 = test_case[2][4]
+    # theta6 = test_case[2][5]
+
+    # for i, t in enumerate([theta1, theta2, theta3, theta4, theta5, theta6]):
+    #     print("theta_%s = %s, want: %s" % (i+1, t, test_case[2][i]))
+
+    ##
     ########################################################################################
 
     ########################################################################################
@@ -302,35 +327,23 @@ def test_code(test_case):
 
     ## (OPTIONAL) YOUR CODE HERE!
 
-
     # compare with tf_echo
-    # test: links all zero
-    # subs = {q1: 0, q2: 0, q3: 0, q4: 0, q5: 0, q6: 0}
-    # gripper_link_pos = [2.153, 0.000, 1.947]
 
-    subs = {q1: test_case[2][0], q2: test_case[2][1], q3: test_case[2][2], q4: test_case[2][3], q5: test_case[2][4],
-            q6: test_case[2][5]}
+    # subs = {q1: test_case[2][0], q2: test_case[2][1], q3: test_case[2][2], q4: test_case[2][3], q5: test_case[2][4],
+    #         q6: test_case[2][5]}
     # i=1
     # for t in (T0_1, T0_2, T0_3, T0_4, T0_5, T0_6, T0_G, T_total,):
     #     print("T0_%s" % i)
+    #     pprint(t, wrap_line=False)
     #     pprint(t.evalf(subs=subs))
     #     pprint(t.evalf(subs=subs) * Matrix([0,0,0,1]))
     #     i+=1
 
-    # Extract rotation matrices from the transformation matrices
-    # R0_1 = T0_1[0:3, 0:3]
-    # R0_3 = T0_3[0:3, 0:3]
-    # R0_6 = T0_6[0:3, 0:3]
-
-    # evaluate with given angles
-    # subs = {q1: test_case[2][0], q2: test_case[2][1], q3: test_case[2][2], q4: test_case[2][3], q5: test_case[2][4],
-    #         q6: test_case[2][5]}
-
     # evaluate with angles from inverse kinematics
     subs = {q1: theta1, q2: theta2, q3: theta3, q4: theta4, q5: theta5, q6: theta6}
 
-    # WC
-    T0_5_num = T0_5.evalf(subs=subs)
+    # # WC
+    # T0_5_num = T0_5.evalf(subs=subs)
     # EE
     T_total_num = T_total.evalf(subs=subs)
 
@@ -338,9 +351,7 @@ def test_code(test_case):
     ########################################################################################
 
     ## For error analysis please set the following variables of your WC location and EE location in the format of [x,y,z]
-    # your_wc = T0_5_num[:3, 3]  # <--- Load your calculated WC values in this array
     your_wc = [wx, wy, wz]  # <--- Load your calculated WC values in this array
-    # your_ee = [1, 1, 1]  # <--- Load your calculated end effector value from your forward kinematics
     your_ee = T_total_num[:3, 3]  # <--- Load your calculated end effector value from your forward kinematics
     ########################################################################################
 
@@ -362,22 +373,22 @@ def test_code(test_case):
             print("WC OK, at %s" % your_wc)
 
     # # Find theta errors
-    t_1_e = abs(theta1 - test_case[2][0])
-    t_2_e = abs(theta2 - test_case[2][1])
-    t_3_e = abs(theta3 - test_case[2][2])
-    t_4_e = abs(theta4 - test_case[2][3])
-    t_5_e = abs(theta5 - test_case[2][4])
-    t_6_e = abs(theta6 - test_case[2][5])
+    t_1_e = abs(theta1 - test_case[2][0]) % pi
+    t_2_e = abs(theta2 - test_case[2][1]) % pi
+    t_3_e = abs(theta3 - test_case[2][2]) % pi
+    t_4_e = abs(theta4 - test_case[2][3]) % pi
+    t_5_e = abs(theta5 - test_case[2][4]) % pi
+    t_6_e = abs(theta6 - test_case[2][5]) % pi
     print ("\nTheta 1 error is: %04.8f" % t_1_e)
     print ("Theta 2 error is: %04.8f" % t_2_e)
     print ("Theta 3 error is: %04.8f" % t_3_e)
     print ("Theta 4 error is: %04.8f" % t_4_e)
     print ("Theta 5 error is: %04.8f" % t_5_e)
     print ("Theta 6 error is: %04.8f" % t_6_e)
-    print ("\n**These theta errors may not be a correct representation of your code, due to the fact \
-           \nthat the arm can have muliple positions. It is best to add your forward kinmeatics to \
-           \nconfirm whether your code is working or not**")
-    print (" ")
+    # print ("\n**These theta errors may not be a correct representation of your code, due to the fact \
+    #        \nthat the arm can have muliple positions. It is best to add your forward kinmeatics to \
+    #        \nconfirm whether your code is working or not**")
+    # print (" ")
 
     # Find FK EE error
     if not (sum(your_ee) == 3):
@@ -398,4 +409,4 @@ if __name__ == "__main__":
     # Change test case number for different scenarios
     for test_case_number in range(len(test_cases)):
         test_code(test_cases[test_case_number])
-        break
+        # break
