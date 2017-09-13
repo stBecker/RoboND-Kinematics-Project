@@ -154,6 +154,7 @@ def handle_calculate_IK(req):
         # Initialize service response
         joint_trajectory_list = []
         for x in xrange(0, len(req.poses)):
+            print("Inverting pose %s of %s" % (x, len(req.poses)))
             # IK code starts here
             joint_trajectory_point = JointTrajectoryPoint()
 
