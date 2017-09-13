@@ -1,7 +1,7 @@
 from sympy import *
 from time import time
 from mpmath import radians
-import tf
+import debug_tf as tf
 import numpy as np
 
 '''
@@ -138,6 +138,8 @@ def test_code(test_case):
         T0_3 = Matrix([[sin(q2 + q3)*cos(q1), cos(q1)*cos(q2 + q3), -sin(q1), (1.25*sin(q2) + 0.35)*cos(q1)], [sin(q1)*sin(q2 + q3), sin(q1)*cos(q2 + q3), cos(q1), (1.25*sin(q2) + 0.35)*sin(q1)], [cos(q2 + q3), -sin(q2 + q3), 0, 1.25*cos(q2) + 0.75], [0, 0, 0, 1]])
         T0_6 = Matrix([[((sin(q1)*sin(q4) + sin(q2 + q3)*cos(q1)*cos(q4))*cos(q5) + sin(q5)*cos(q1)*cos(q2 + q3))*cos(q6) + (sin(q1)*cos(q4) - sin(q4)*sin(q2 + q3)*cos(q1))*sin(q6), -((sin(q1)*sin(q4) + sin(q2 + q3)*cos(q1)*cos(q4))*cos(q5) + sin(q5)*cos(q1)*cos(q2 + q3))*sin(q6) + (sin(q1)*cos(q4) - sin(q4)*sin(q2 + q3)*cos(q1))*cos(q6), -(sin(q1)*sin(q4) + sin(q2 + q3)*cos(q1)*cos(q4))*sin(q5) + cos(q1)*cos(q5)*cos(q2 + q3), (1.25*sin(q2) - 0.054*sin(q2 + q3) + 1.5*cos(q2 + q3) + 0.35)*cos(q1)], [((sin(q1)*sin(q2 + q3)*cos(q4) - sin(q4)*cos(q1))*cos(q5) + sin(q1)*sin(q5)*cos(q2 + q3))*cos(q6) - (sin(q1)*sin(q4)*sin(q2 + q3) + cos(q1)*cos(q4))*sin(q6), -((sin(q1)*sin(q2 + q3)*cos(q4) - sin(q4)*cos(q1))*cos(q5) + sin(q1)*sin(q5)*cos(q2 + q3))*sin(q6) - (sin(q1)*sin(q4)*sin(q2 + q3) + cos(q1)*cos(q4))*cos(q6), -(sin(q1)*sin(q2 + q3)*cos(q4) - sin(q4)*cos(q1))*sin(q5) + sin(q1)*cos(q5)*cos(q2 + q3), (1.25*sin(q2) - 0.054*sin(q2 + q3) + 1.5*cos(q2 + q3) + 0.35)*sin(q1)], [-(sin(q5)*sin(q2 + q3) - cos(q4)*cos(q5)*cos(q2 + q3))*cos(q6) - sin(q4)*sin(q6)*cos(q2 + q3), (sin(q5)*sin(q2 + q3) - cos(q4)*cos(q5)*cos(q2 + q3))*sin(q6) - sin(q4)*cos(q6)*cos(q2 + q3), -sin(q5)*cos(q4)*cos(q2 + q3) - sin(q2 + q3)*cos(q5), -1.5*sin(q2 + q3) + 1.25*cos(q2) - 0.054*cos(q2 + q3) + 0.75], [0, 0, 0, 1]])
         R3_6 = Matrix([[-1.0*sin(q4)*sin(q6) + 1.0*cos(q4)*cos(q5)*cos(q6), -1.0*sin(q4)*cos(q6) - 1.0*sin(q6)*cos(q4)*cos(q5), -1.0*sin(q5)*cos(q4)], [sin(q5)*cos(q6), -sin(q5)*sin(q6), cos(q5)], [-sin(q4)*cos(q5)*cos(q6) - sin(q6)*cos(q4), sin(q4)*sin(q6)*cos(q5) - cos(q4)*cos(q6), sin(q4)*sin(q5)]])
+        T0_3 = Matrix([[sin(q2 + q3)*cos(q1), cos(q1)*cos(q2 + q3), -sin(q1), (1.25*sin(q2) + 0.35)*cos(q1)], [sin(q1)*sin(q2 + q3), sin(q1)*cos(q2 + q3), cos(q1), (1.25*sin(q2) + 0.35)*sin(q1)], [cos(q2 + q3), -sin(q2 + q3), 0, 1.25*cos(q2) + 0.75], [0, 0, 0, 1]])
+        T0_4 = Matrix([[sin(q1)*sin(q4) + sin(q2 + q3)*cos(q1)*cos(q4), sin(q1)*cos(q4) - sin(q4)*sin(q2 + q3)*cos(q1), cos(q1)*cos(q2 + q3), (1.25*sin(q2) - 0.054*sin(q2 + q3) + 1.5*cos(q2 + q3) + 0.35)*cos(q1)], [sin(q1)*sin(q2 + q3)*cos(q4) - sin(q4)*cos(q1), -sin(q1)*sin(q4)*sin(q2 + q3) - cos(q1)*cos(q4), sin(q1)*cos(q2 + q3), (1.25*sin(q2) - 0.054*sin(q2 + q3) + 1.5*cos(q2 + q3) + 0.35)*sin(q1)], [cos(q4)*cos(q2 + q3), -sin(q4)*cos(q2 + q3), -sin(q2 + q3), -1.5*sin(q2 + q3) + 1.25*cos(q2) - 0.054*cos(q2 + q3) + 0.75], [0, 0, 0, 1]])
 
     else:
         # Define Modified DH Transformation matrix
@@ -236,13 +238,14 @@ def test_code(test_case):
     theta1 = atan2(wy, wx)
 
     # link2 origin as offset
-    pz = wz - s[d1]
-    py = wy - s[a1]
-    l2 = s[a2]
-    l3 = s[d4]
+    pz = wz - 0.75
+    py = wy
+    px = wx - 0.35
+    l2 = 1.25
+    l3 = sqrt(0.96**2 + 0.054**2)
     max_length_of_arms = l2 + l3
-    beta = atan2(pz, py)
-    lp = sqrt(pz ** 2 + py ** 2)
+    beta = atan2(pz, px)
+    lp = sqrt(pz ** 2 + px ** 2)
 
     if lp == max_length_of_arms:
         # arms must be fully extended
@@ -257,8 +260,8 @@ def test_code(test_case):
         print("WC coordinates are out of reach: %s %s %s" % (wx, wy, wz))
 
     else:
-        c3 = (py**2 + pz**2 - l2**2 - l3**2)/(2*l2*l3)
-        s3 = sqrt(1 - c3**2)
+        c3 = (px**2 + pz**2 - l2**2 - l3**2)/(2*l2*l3)
+        s3 = sqrt(1.0 - c3**2)
         s3_alt = - s3
         theta3 = atan2(s3, c3)
         theta3_alt = atan2(s3_alt, c3)
@@ -269,13 +272,13 @@ def test_code(test_case):
         theta2 = beta - b
         theta2_alt = beta - b_alt
 
-        # adjust theta2
-        theta2 = pi/2 - theta2
-        theta2_alt = pi/2 - theta2_alt
+        # # adjust theta2
+        # theta2 = pi/2 - theta2
+        # theta2_alt = pi/2 - theta2_alt
 
-        # adjust theta3
-        theta3 = theta3 - pi/2
-        theta3_alt = theta3_alt - pi/2
+        # # adjust theta3
+        # theta3 = theta3 - pi/2
+        # theta3_alt = theta3_alt - pi/2
 
     subs = {q1: theta1, q2: theta2, q3: theta3}
     # subs = {q1: 0, q2: 0, q3: 0}
@@ -342,8 +345,8 @@ def test_code(test_case):
     # evaluate with angles from inverse kinematics
     subs = {q1: theta1, q2: theta2, q3: theta3, q4: theta4, q5: theta5, q6: theta6}
 
-    # # WC
-    # T0_5_num = T0_5.evalf(subs=subs)
+    # WC
+    T0_5_num = T0_5.evalf(subs=subs)
     # EE
     T_total_num = T_total.evalf(subs=subs)
 
@@ -352,6 +355,7 @@ def test_code(test_case):
 
     ## For error analysis please set the following variables of your WC location and EE location in the format of [x,y,z]
     your_wc = [wx, wy, wz]  # <--- Load your calculated WC values in this array
+    your_wc = T0_5_num[:3, 3]  # <--- Load your calculated WC values in this array
     your_ee = T_total_num[:3, 3]  # <--- Load your calculated end effector value from your forward kinematics
     ########################################################################################
 
@@ -373,12 +377,12 @@ def test_code(test_case):
             print("WC OK, at %s" % your_wc)
 
     # # Find theta errors
-    t_1_e = abs(theta1 - test_case[2][0]) % pi
-    t_2_e = abs(theta2 - test_case[2][1]) % pi
-    t_3_e = abs(theta3 - test_case[2][2]) % pi
-    t_4_e = abs(theta4 - test_case[2][3]) % pi
-    t_5_e = abs(theta5 - test_case[2][4]) % pi
-    t_6_e = abs(theta6 - test_case[2][5]) % pi
+    t_1_e = abs(theta1 - test_case[2][0]) % 2*pi
+    t_2_e = abs(theta2 - test_case[2][1]) % 2*pi
+    t_3_e = abs(theta3 - test_case[2][2]) % 2*pi
+    t_4_e = abs(theta4 - test_case[2][3]) % 2*pi
+    t_5_e = abs(theta5 - test_case[2][4]) % 2*pi
+    t_6_e = abs(theta6 - test_case[2][5]) % 2*pi
     print ("\nTheta 1 error is: %04.8f" % t_1_e)
     print ("Theta 2 error is: %04.8f" % t_2_e)
     print ("Theta 3 error is: %04.8f" % t_3_e)

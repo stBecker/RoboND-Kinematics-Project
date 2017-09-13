@@ -182,13 +182,14 @@ def handle_calculate_IK(req):
             theta1 = atan2(wy, wx)
 
             # link2 origin as offset
-            pz = wz - s[d1]
-            py = wy - s[a1]
-            l2 = s[a2]
-            l3 = s[d4]
+            pz = wz - 0.75
+            py = wy
+            px = wx - 0.35
+            l2 = 1.25
+            l3 = sqrt(0.96 ** 2 + 0.054 ** 2)
             max_length_of_arms = l2 + l3
-            beta = atan2(pz, py)
-            lp = sqrt(pz ** 2 + py ** 2)
+            beta = atan2(pz, px)
+            lp = sqrt(pz ** 2 + px ** 2)
 
             if lp == max_length_of_arms:
                 # arms must be fully extended
@@ -203,8 +204,8 @@ def handle_calculate_IK(req):
                 print("WC coordinates are out of reach: %s %s %s" % (wx, wy, wz))
 
             else:
-                c3 = (py ** 2 + pz ** 2 - l2 ** 2 - l3 ** 2) / (2 * l2 * l3)
-                s3 = sqrt(1 - c3 ** 2)
+                c3 = (px ** 2 + pz ** 2 - l2 ** 2 - l3 ** 2) / (2 * l2 * l3)
+                s3 = sqrt(1.0 - c3 ** 2)
                 s3_alt = - s3
                 theta3 = atan2(s3, c3)
                 theta3_alt = atan2(s3_alt, c3)
@@ -215,13 +216,13 @@ def handle_calculate_IK(req):
                 theta2 = beta - b
                 theta2_alt = beta - b_alt
 
-                # adjust theta2
-                theta2 = pi / 2 - theta2
-                theta2_alt = pi / 2 - theta2_alt
+                # # adjust theta2
+                # theta2 = pi/2 - theta2
+                # theta2_alt = pi/2 - theta2_alt
 
-                # adjust theta3
-                theta3 = theta3 - pi / 2
-                theta3_alt = theta3_alt - pi / 2
+                # # adjust theta3
+                # theta3 = theta3 - pi/2
+                # theta3_alt = theta3_alt - pi/2
 
             subs = {q1: theta1, q2: theta2, q3: theta3}
 
