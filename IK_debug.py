@@ -261,40 +261,34 @@ def test_code(test_case):
         print("WC coordinates are out of reach: %s %s %s" % (wx, wy, wz))
 
     else:
-        c3 = (px**2 + pz**2 - l2**2 - l3**2)/(2*l2*l3)
-        s3 = sqrt(1.0 - c3**2)
-        s3_alt = - s3
-        a = atan2(s3, c3)
-        a_alt = atan2(s3_alt, c3)
+        # c3 = (px**2 + pz**2 - l2**2 - l3**2)/(2*l2*l3)
+        # s3 = sqrt(1.0 - c3**2)
+        # s3_alt = - s3
+        # a = atan2(s3, c3)
+        # a_alt = atan2(s3_alt, c3)
+        #
+        # b = atan2(l3 * sin(a), l2 + l3 * cos(a))
+        # b_alt = atan2(l3 * sin(a_alt), l2 + l3 * cos(a_alt))
+        #
+        # theta2 = pi/2 - beta - b
+        # theta2_alt = pi/2 - beta - b_alt
+        #
+        # theta3 = pi / 2 - a
+        # theta3_alt = pi / 2 - a_alt
 
-        b = atan2(l3 * sin(a), l2 + l3 * cos(a))
-        b_alt = atan2(l3 * sin(a_alt), l2 + l3 * cos(a_alt))
+        WC = [wx, wy, wz]
+        side_a = 1.501  # d4
+        side_b = sqrt((sqrt(wx ** 2 + wy ** 2) - 0.35) ** 2 + (wz - 0.75) ** 2)
+        side_c = 1.25  # a2
 
-        theta2 = pi/2 - beta - b
-        theta2_alt = pi/2 - beta - b_alt
+        angle_a = acos((side_b ** 2 + side_c ** 2 - side_a ** 2) / (2 * side_b * side_c))
+        angle_b = acos((side_a ** 2 + side_c ** 2 - side_b ** 2) / (2 * side_a * side_c))
+        angle_c = acos((side_a ** 2 + side_b ** 2 - side_c ** 2) / (2 * side_a * side_b))
 
-        theta3 = pi / 2 - a
-        theta3_alt = pi / 2 - a_alt
-
-    # # solution video
-    # WC = [wx, wy, wz]
-    # side_a = 1.501  # d4
-    # side_b = sqrt((sqrt(wx ** 2 + wy ** 2) - 0.35) ** 2 + (wz - 0.75) ** 2)
-    # side_c = 1.25  # a2
-    #
-    # angle_a = acos((side_b ** 2 + side_c ** 2 - side_a ** 2) / (2 * side_b * side_c))
-    # angle_b = acos((side_a ** 2 + side_c ** 2 - side_b ** 2) / (2 * side_a * side_c))
-    # angle_c = acos((side_a ** 2 + side_b ** 2 - side_c ** 2) / (2 * side_a * side_b))
-    #
-    # theta2 = pi / 2 - angle_a - atan2(wz - 0.75, sqrt(wx ** 2 + wy ** 2) - 0.35)
-    # theta3 = pi / 2 - (angle_b + 0.036)  # 0.036 accounts for sag in link4 of -0.054
+        theta2 = pi / 2 - angle_a - atan2(wz - 0.75, sqrt(wx ** 2 + wy ** 2) - 0.35)
+        theta3 = pi / 2 - (angle_b + 0.036)  # 0.036 accounts for sag in link4 of -0.054
 
     subs = {q1: theta1, q2: theta2, q3: theta3}
-    # subs = {q1: 0, q2: 0, q3: 0}
-    # subs = {q1: 0, q2: 0, q3: 0, q4: 0, q5: 0, q6: 0}
-    # subs = {q1: test_case[2][0], q2: test_case[2][1], q3: test_case[2][2], q4: test_case[2][3], q5: test_case[2][4],
-    #         q6: test_case[2][5]}
-    # subs = {q1: test_case[2][0], q2: test_case[2][1], q3: test_case[2][2]}
 
     R0_3 = T0_3[:3,:3]
     R0_3_num = R0_3.evalf(subs=subs)
@@ -310,15 +304,6 @@ def test_code(test_case):
     theta5 = atan2(sqrt(R3_6_num[1, 0]**2 + (-R3_6_num[1, 1])**2), R3_6_num[1, 2])
     theta6 = atan2(- R3_6_num[1, 1], R3_6_num[1, 0])
 
-    # solution video
-    # theta4 = atan2(R3_6_num[2, 2], - R3_6_num[0, 2])
-    # theta5 = atan2(sqrt(R3_6_num[0, 2]**2 + R3_6_num[2, 2]**2), R3_6_num[1, 2])
-    # theta6 = atan2(- R3_6_num[1, 1], R3_6_num[1, 0])
-
-    # pprint(R3_6.evalf(subs={q4: theta4, q5: theta5, q6: theta6}), wrap_line=False)
-    # pprint(R3_6.evalf(subs={q1: test_case[2][0], q2: test_case[2][1], q3: test_case[2][2], q4: test_case[2][3], q5: test_case[2][4],
-    #         q6: test_case[2][5]}), wrap_line=False)
-
     # theta1 = test_case[2][0]
     # theta2 = test_case[2][1]
     # theta3 = test_case[2][2]
@@ -326,10 +311,6 @@ def test_code(test_case):
     # theta5 = test_case[2][4]
     # theta6 = test_case[2][5]
 
-    # for i, t in enumerate([theta1, theta2, theta3, theta4, theta5, theta6]):
-    #     print("theta_%s = %s, want: %s" % (i+1, t, test_case[2][i]))
-
-    ##
     ########################################################################################
 
     ########################################################################################
@@ -340,8 +321,6 @@ def test_code(test_case):
 
     # compare with tf_echo
 
-    # subs = {q1: test_case[2][0], q2: test_case[2][1], q3: test_case[2][2], q4: test_case[2][3], q5: test_case[2][4],
-    #         q6: test_case[2][5]}
     # i=1
     # for t in (T0_1, T0_2, T0_3, T0_4, T0_5, T0_6, T0_G, T_total,):
     #     print("T0_%s" % i)

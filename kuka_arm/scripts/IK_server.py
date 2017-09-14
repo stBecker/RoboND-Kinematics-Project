@@ -183,10 +183,10 @@ def handle_calculate_IK(req):
 
             # link2 origin as offset
             pz = wz - 0.75
-            py = wy
-            px = wx - 0.35
+            # project wx, wy into z-y-plane
+            px = sqrt(wx ** 2 + wy ** 2) - 0.35
             l2 = 1.25
-            l3 = sqrt(0.96 ** 2 + 0.054 ** 2)
+            l3 = 1.50
             max_length_of_arms = l2 + l3
             beta = atan2(pz, px)
             lp = sqrt(pz ** 2 + px ** 2)
@@ -204,25 +204,32 @@ def handle_calculate_IK(req):
                 print("WC coordinates are out of reach: %s %s %s" % (wx, wy, wz))
 
             else:
-                c3 = (px ** 2 + pz ** 2 - l2 ** 2 - l3 ** 2) / (2 * l2 * l3)
-                s3 = sqrt(1.0 - c3 ** 2)
-                s3_alt = - s3
-                theta3 = atan2(s3, c3)
-                theta3_alt = atan2(s3_alt, c3)
+                # c3 = (px**2 + pz**2 - l2**2 - l3**2)/(2*l2*l3)
+                # s3 = sqrt(1.0 - c3**2)
+                # s3_alt = - s3
+                # a = atan2(s3, c3)
+                # a_alt = atan2(s3_alt, c3)
+                #
+                # b = atan2(l3 * sin(a), l2 + l3 * cos(a))
+                # b_alt = atan2(l3 * sin(a_alt), l2 + l3 * cos(a_alt))
+                #
+                # theta2 = pi/2 - beta - b
+                # theta2_alt = pi/2 - beta - b_alt
+                #
+                # theta3 = pi / 2 - a
+                # theta3_alt = pi / 2 - a_alt
 
-                b = atan2(l3 * sin(theta3), l2 + l3 * cos(theta3))
-                b_alt = atan2(l3 * sin(theta3_alt), l2 + l3 * cos(theta3_alt))
+                WC = [wx, wy, wz]
+                side_a = 1.501  # d4
+                side_b = sqrt((sqrt(wx ** 2 + wy ** 2) - 0.35) ** 2 + (wz - 0.75) ** 2)
+                side_c = 1.25  # a2
 
-                theta2 = beta - b
-                theta2_alt = beta - b_alt
+                angle_a = acos((side_b ** 2 + side_c ** 2 - side_a ** 2) / (2 * side_b * side_c))
+                angle_b = acos((side_a ** 2 + side_c ** 2 - side_b ** 2) / (2 * side_a * side_c))
+                angle_c = acos((side_a ** 2 + side_b ** 2 - side_c ** 2) / (2 * side_a * side_b))
 
-                # # adjust theta2
-                # theta2 = pi/2 - theta2
-                # theta2_alt = pi/2 - theta2_alt
-
-                # # adjust theta3
-                # theta3 = theta3 - pi/2
-                # theta3_alt = theta3_alt - pi/2
+                theta2 = pi / 2 - angle_a - atan2(wz - 0.75, sqrt(wx ** 2 + wy ** 2) - 0.35)
+                theta3 = pi / 2 - (angle_b + 0.036)  # 0.036 accounts for sag in link4 of -0.054
 
             subs = {q1: theta1, q2: theta2, q3: theta3}
 
@@ -239,12 +246,6 @@ def handle_calculate_IK(req):
             theta4 = atan2(R3_6_num[2, 2], - R3_6_num[0, 2])
             theta5 = atan2(sqrt(R3_6_num[1, 0] ** 2 + (-R3_6_num[1, 1]) ** 2), R3_6_num[1, 2])
             theta6 = atan2(- R3_6_num[1, 1], R3_6_num[1, 0])
-
-            if theta4 == nan:
-                theta4 = 0
-
-            if theta6 == nan:
-                theta6 = 0
 
             # evaluate with angles from inverse kinematics
             subs = {q1: theta1, q2: theta2, q3: theta3, q4: theta4, q5: theta5, q6: theta6}
