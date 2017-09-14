@@ -269,7 +269,11 @@ def handle_calculate_IK(req):
                     prev_theta = joint_trajectory_list[-1].positions[i]
 
                     if abs(prev_theta - theta) > 1:
-                        theta = alt_thetas[i]
+                        # theta = alt_thetas[i]
+                        if prev_theta > theta:
+                            theta = prev_theta - 0.1
+                        else:
+                            theta = prev_theta + 0.1
 
                     joint_trajectory_point.positions[i] = theta
 
