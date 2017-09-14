@@ -156,6 +156,11 @@ def handle_calculate_IK(req):
         joint_trajectory_list = []
         for x in xrange(0, len(req.poses)):
             print("Inverting pose %s of %s" % (x+1, len(req.poses)))
+
+	    # ignore everything but the last request
+            if 2 < x < len(req.poses)-3:
+                continue
+
             # IK code starts here
             joint_trajectory_point = JointTrajectoryPoint()
 
@@ -262,21 +267,6 @@ def handle_calculate_IK(req):
             # Populate response for the IK request
             # In the next line replace theta1,theta2...,theta6 by your joint angle variables
             joint_trajectory_point.positions = [theta1, theta2, theta3, theta4, theta5, theta6]
-            # try not to rotate too much
-            if len(joint_trajectory_list) > 0:
-                for i in range(len(joint_trajectory_point.positions)):
-                    theta = joint_trajectory_point.positions[i]
-                    prev_theta = joint_trajectory_list[-1].positions[i]
-
-                    if abs(prev_theta - theta) > 0.2:
-                        # theta = alt_thetas[i]
-                        if prev_theta > theta:
-                            theta = prev_theta - 0.05
-                        else:
-                            theta = prev_theta + 0.05
-
-                    joint_trajectory_point.positions[i] = theta
-
             joint_trajectory_list.append(joint_trajectory_point)
 
         rospy.loginfo("length of Joint Trajectory List: %s" % len(joint_trajectory_list))
