@@ -141,6 +141,7 @@ def test_code(test_case):
         R3_6 = Matrix([[-1.0*sin(q4)*sin(q6) + 1.0*cos(q4)*cos(q5)*cos(q6), -1.0*sin(q4)*cos(q6) - 1.0*sin(q6)*cos(q4)*cos(q5), -1.0*sin(q5)*cos(q4)], [sin(q5)*cos(q6), -sin(q5)*sin(q6), cos(q5)], [-sin(q4)*cos(q5)*cos(q6) - sin(q6)*cos(q4), sin(q4)*sin(q6)*cos(q5) - cos(q4)*cos(q6), sin(q4)*sin(q5)]])
         T0_3 = Matrix([[sin(q2 + q3)*cos(q1), cos(q1)*cos(q2 + q3), -sin(q1), (1.25*sin(q2) + 0.35)*cos(q1)], [sin(q1)*sin(q2 + q3), sin(q1)*cos(q2 + q3), cos(q1), (1.25*sin(q2) + 0.35)*sin(q1)], [cos(q2 + q3), -sin(q2 + q3), 0, 1.25*cos(q2) + 0.75], [0, 0, 0, 1]])
         T0_4 = Matrix([[sin(q1)*sin(q4) + sin(q2 + q3)*cos(q1)*cos(q4), sin(q1)*cos(q4) - sin(q4)*sin(q2 + q3)*cos(q1), cos(q1)*cos(q2 + q3), (1.25*sin(q2) - 0.054*sin(q2 + q3) + 1.5*cos(q2 + q3) + 0.35)*cos(q1)], [sin(q1)*sin(q2 + q3)*cos(q4) - sin(q4)*cos(q1), -sin(q1)*sin(q4)*sin(q2 + q3) - cos(q1)*cos(q4), sin(q1)*cos(q2 + q3), (1.25*sin(q2) - 0.054*sin(q2 + q3) + 1.5*cos(q2 + q3) + 0.35)*sin(q1)], [cos(q4)*cos(q2 + q3), -sin(q4)*cos(q2 + q3), -sin(q2 + q3), -1.5*sin(q2 + q3) + 1.25*cos(q2) - 0.054*cos(q2 + q3) + 0.75], [0, 0, 0, 1]])
+        T0_G = Matrix([[((sin(q1)*sin(q4) + sin(q2 + q3)*cos(q1)*cos(q4))*cos(q5) + sin(q5)*cos(q1)*cos(q2 + q3))*cos(q6) + (sin(q1)*cos(q4) - sin(q4)*sin(q2 + q3)*cos(q1))*sin(q6), -((sin(q1)*sin(q4) + sin(q2 + q3)*cos(q1)*cos(q4))*cos(q5) + sin(q5)*cos(q1)*cos(q2 + q3))*sin(q6) + (sin(q1)*cos(q4) - sin(q4)*sin(q2 + q3)*cos(q1))*cos(q6), -(sin(q1)*sin(q4) + sin(q2 + q3)*cos(q1)*cos(q4))*sin(q5) + cos(q1)*cos(q5)*cos(q2 + q3), -0.303*(sin(q1)*sin(q4) + sin(q2 + q3)*cos(q1)*cos(q4))*sin(q5) + (1.25*sin(q2) - 0.054*sin(q2 + q3) + 1.5*cos(q2 + q3) + 0.35)*cos(q1) + 0.303*cos(q1)*cos(q5)*cos(q2 + q3)], [((sin(q1)*sin(q2 + q3)*cos(q4) - sin(q4)*cos(q1))*cos(q5) + sin(q1)*sin(q5)*cos(q2 + q3))*cos(q6) - (sin(q1)*sin(q4)*sin(q2 + q3) + cos(q1)*cos(q4))*sin(q6), -((sin(q1)*sin(q2 + q3)*cos(q4) - sin(q4)*cos(q1))*cos(q5) + sin(q1)*sin(q5)*cos(q2 + q3))*sin(q6) - (sin(q1)*sin(q4)*sin(q2 + q3) + cos(q1)*cos(q4))*cos(q6), -(sin(q1)*sin(q2 + q3)*cos(q4) - sin(q4)*cos(q1))*sin(q5) + sin(q1)*cos(q5)*cos(q2 + q3), -0.303*(sin(q1)*sin(q2 + q3)*cos(q4) - sin(q4)*cos(q1))*sin(q5) + (1.25*sin(q2) - 0.054*sin(q2 + q3) + 1.5*cos(q2 + q3) + 0.35)*sin(q1) + 0.303*sin(q1)*cos(q5)*cos(q2 + q3)], [-(sin(q5)*sin(q2 + q3) - cos(q4)*cos(q5)*cos(q2 + q3))*cos(q6) - sin(q4)*sin(q6)*cos(q2 + q3), (sin(q5)*sin(q2 + q3) - cos(q4)*cos(q5)*cos(q2 + q3))*sin(q6) - sin(q4)*cos(q6)*cos(q2 + q3), -sin(q5)*cos(q4)*cos(q2 + q3) - sin(q2 + q3)*cos(q5), -0.303*sin(q5)*cos(q4)*cos(q2 + q3) - 0.303*sin(q2 + q3)*cos(q5) - 1.5*sin(q2 + q3) + 1.25*cos(q2) - 0.054*cos(q2 + q3) + 0.75], [0, 0, 0, 1]])
 
     else:
         # Define Modified DH Transformation matrix
@@ -237,79 +238,77 @@ def test_code(test_case):
 
     # Calculate joint angles using Geometric IK method
     theta1 = atan2(wy, wx)
+    theta1p = theta1 - pi
 
-    # link2 origin as offset
-    pz = wz - 0.75
-    # project wx, wy into z-y-plane
-    px = sqrt(wx**2 + wy**2) - 0.35
-    l2 = 1.25
-    l3 = 1.50
-    max_length_of_arms = l2 + l3
-    beta = atan2(pz, px)
-    lp = sqrt(pz ** 2 + px ** 2)
+    WC = [wx, wy, wz]
+    link3 = 1.501  # d4
+    side_b = sqrt((sqrt(wx ** 2 + wy ** 2) - 0.35) ** 2 + (wz - 0.75) ** 2)
+    link2 = 1.25  # a2
+    beta = atan2(wz - 0.75, sqrt(wx ** 2 + wy ** 2) - 0.35)
 
-    if lp == max_length_of_arms:
-        # arms must be fully extended
-        theta3 = pi/2
-        theta2 = pi/2 - beta
-        print("Arm fully extended")
+    # two possible solutions for each angle
+    angle_a = acos((side_b ** 2 + link2 ** 2 - link3 ** 2) / (2 * side_b * link2))
+    angle_ap = - angle_a
+    angle_b = acos((link3 ** 2 + link2 ** 2 - side_b ** 2) / (2 * link3 * link2))
+    angle_bp = - angle_b
+    angle_c = acos((link3 ** 2 + side_b ** 2 - link2 ** 2) / (2 * link3 * side_b))
 
-    elif lp > max_length_of_arms:
-        # point is out of reach
-        theta3 = 0
-        theta2 = 0
-        print("WC coordinates are out of reach: %s %s %s" % (wx, wy, wz))
+    theta2 = pi / 2 - angle_a - beta
+    theta2p = pi / 2 - angle_ap - beta
+    theta3 = pi / 2 - (angle_b + 0.036)  # 0.036 accounts for sag in link4 of -0.054
+    theta3p = pi / 2 - (angle_bp + 0.036)  # 0.036 accounts for sag in link4 of -0.054
 
-    else:
-        # c3 = (px**2 + pz**2 - l2**2 - l3**2)/(2*l2*l3)
-        # s3 = sqrt(1.0 - c3**2)
-        # s3_alt = - s3
-        # a = atan2(s3, c3)
-        # a_alt = atan2(s3_alt, c3)
-        #
-        # b = atan2(l3 * sin(a), l2 + l3 * cos(a))
-        # b_alt = atan2(l3 * sin(a_alt), l2 + l3 * cos(a_alt))
-        #
-        # theta2 = pi/2 - beta - b
-        # theta2_alt = pi/2 - beta - b_alt
-        #
-        # theta3 = pi / 2 - a
-        # theta3_alt = pi / 2 - a_alt
-
-        WC = [wx, wy, wz]
-        side_a = 1.501  # d4
-        side_b = sqrt((sqrt(wx ** 2 + wy ** 2) - 0.35) ** 2 + (wz - 0.75) ** 2)
-        side_c = 1.25  # a2
-
-        angle_a = acos((side_b ** 2 + side_c ** 2 - side_a ** 2) / (2 * side_b * side_c))
-        angle_b = acos((side_a ** 2 + side_c ** 2 - side_b ** 2) / (2 * side_a * side_c))
-        angle_c = acos((side_a ** 2 + side_b ** 2 - side_c ** 2) / (2 * side_a * side_b))
-
-        theta2 = pi / 2 - angle_a - atan2(wz - 0.75, sqrt(wx ** 2 + wy ** 2) - 0.35)
-        theta3 = pi / 2 - (angle_b + 0.036)  # 0.036 accounts for sag in link4 of -0.054
+    # ca = (side_b ** 2 + link2 ** 2 - link3 ** 2) / (2 * side_b * link2)
+    # sa = sqrt(1.0 - ca**2)
+    # sa_alt = - sa
+    # a = atan2(sa, ca)
+    # a_alt = atan2(sa_alt, ca)
+    #
+    # b = atan2(link3 * sin(a), link2 + link3 * cos(a))
+    # b_alt = atan2(link3 * sin(a_alt), link2 + link3 * cos(a_alt))
+    #
+    # theta2 = pi/2 - beta - b
+    # theta2_alt = pi/2 - beta - b_alt
+    #
+    # theta3 = pi / 2 - a
+    # theta3_alt = pi / 2 - a_alt
 
     subs = {q1: theta1, q2: theta2, q3: theta3}
+    subs_alt = {q1: theta1, q2: theta2p, q3: theta3p}
 
     R0_3 = T0_3[:3,:3]
     R0_3_num = R0_3.evalf(subs=subs)
+    R0_3_num_alt = R0_3.evalf(subs=subs_alt)
     Rrpy3x3 = Rrpy[:3, :3]
 
     R3_6_num = R0_3_num.inv('LU') * Rrpy3x3
+    R3_6_num_alt = R0_3_num_alt.inv('LU') * Rrpy3x3
     if not use_precomputed_transforms:
         R0_6 = T0_6[:3, :3]
         R3_6 = R0_3.inv('LU') * R0_6
         R3_6 = simplify(R3_6.evalf(subs=subs))
 
     theta4 = atan2(R3_6_num[2, 2], - R3_6_num[0, 2])
-    theta5 = atan2(sqrt(R3_6_num[1, 0]**2 + (-R3_6_num[1, 1])**2), R3_6_num[1, 2])
+    theta5 = atan2(sqrt(R3_6_num[0, 2]**2 + R3_6_num[2, 2]**2), R3_6_num[1, 2])
+    theta5_alt = atan2(sqrt(R3_6_num[1, 0]**2 + (-R3_6_num[1, 1])**2), R3_6_num[1, 2])
     theta6 = atan2(- R3_6_num[1, 1], R3_6_num[1, 0])
-
+    
+    theta4p = atan2(R3_6_num_alt[2, 2], - R3_6_num_alt[0, 2])
+    theta5p = atan2(sqrt(R3_6_num_alt[0, 2]**2 + R3_6_num_alt[2, 2]**2), R3_6_num_alt[1, 2])
+    theta6p = atan2(- R3_6_num_alt[1, 1], R3_6_num_alt[1, 0])
+    
     # theta1 = test_case[2][0]
     # theta2 = test_case[2][1]
     # theta3 = test_case[2][2]
     # theta4 = test_case[2][3]
     # theta5 = test_case[2][4]
     # theta6 = test_case[2][5]
+
+    alt_thetas = [theta1p, theta2p, theta3p, theta4p, theta5p, theta6p]
+    thetas = [theta1, theta2, theta3, theta4, theta5, theta6]
+
+    for i in range(len(thetas)):
+        print("%i: theta: %f alt: %f want: %s" % (i+1, thetas[i], alt_thetas[i], test_case[2][i]))
 
     ########################################################################################
 
@@ -335,7 +334,7 @@ def test_code(test_case):
     # WC
     T0_5_num = T0_5.evalf(subs=subs)
     # EE
-    T_total_num = T_total.evalf(subs=subs)
+    T0_EE = T0_G.evalf(subs=subs)
 
     ## End your code input for forward kinematics here!
     ########################################################################################
@@ -343,7 +342,7 @@ def test_code(test_case):
     ## For error analysis please set the following variables of your WC location and EE location in the format of [x,y,z]
     your_wc = [wx, wy, wz]  # <--- Load your calculated WC values in this array
     your_wc = T0_5_num[:3, 3]  # <--- Load your calculated WC values in this array
-    your_ee = T_total_num[:3, 3]  # <--- Load your calculated end effector value from your forward kinematics
+    your_ee = T0_EE[:3, 3]  # <--- Load your calculated end effector value from your forward kinematics
     ########################################################################################
 
     ## Error analysis
@@ -364,12 +363,12 @@ def test_code(test_case):
             print("WC OK, at %s" % your_wc)
 
     # # Find theta errors
-    t_1_e = abs(theta1 - test_case[2][0]) % 2*pi
-    t_2_e = abs(theta2 - test_case[2][1]) % 2*pi
-    t_3_e = abs(theta3 - test_case[2][2]) % 2*pi
-    t_4_e = abs(theta4 - test_case[2][3]) % 2*pi
-    t_5_e = abs(theta5 - test_case[2][4]) % 2*pi
-    t_6_e = abs(theta6 - test_case[2][5]) % 2*pi
+    t_1_e = abs(theta1 - test_case[2][0])
+    t_2_e = abs(theta2 - test_case[2][1])
+    t_3_e = abs(theta3 - test_case[2][2])
+    t_4_e = abs(theta4 - test_case[2][3])
+    t_5_e = abs(theta5 - test_case[2][4])
+    t_6_e = abs(theta6 - test_case[2][5])
     print ("\nTheta 1 error is: %04.8f" % t_1_e)
     print ("Theta 2 error is: %04.8f" % t_2_e)
     print ("Theta 3 error is: %04.8f" % t_3_e)

@@ -80,6 +80,7 @@ def handle_calculate_IK(req):
             T0_3 = Matrix([[sin(q2 + q3)*cos(q1), cos(q1)*cos(q2 + q3), -sin(q1), (1.25*sin(q2) + 0.35)*cos(q1)], [sin(q1)*sin(q2 + q3), sin(q1)*cos(q2 + q3), cos(q1), (1.25*sin(q2) + 0.35)*sin(q1)], [cos(q2 + q3), -sin(q2 + q3), 0, 1.25*cos(q2) + 0.75], [0, 0, 0, 1]])
             T0_6 = Matrix([[((sin(q1)*sin(q4) + sin(q2 + q3)*cos(q1)*cos(q4))*cos(q5) + sin(q5)*cos(q1)*cos(q2 + q3))*cos(q6) + (sin(q1)*cos(q4) - sin(q4)*sin(q2 + q3)*cos(q1))*sin(q6), -((sin(q1)*sin(q4) + sin(q2 + q3)*cos(q1)*cos(q4))*cos(q5) + sin(q5)*cos(q1)*cos(q2 + q3))*sin(q6) + (sin(q1)*cos(q4) - sin(q4)*sin(q2 + q3)*cos(q1))*cos(q6), -(sin(q1)*sin(q4) + sin(q2 + q3)*cos(q1)*cos(q4))*sin(q5) + cos(q1)*cos(q5)*cos(q2 + q3), (1.25*sin(q2) - 0.054*sin(q2 + q3) + 1.5*cos(q2 + q3) + 0.35)*cos(q1)], [((sin(q1)*sin(q2 + q3)*cos(q4) - sin(q4)*cos(q1))*cos(q5) + sin(q1)*sin(q5)*cos(q2 + q3))*cos(q6) - (sin(q1)*sin(q4)*sin(q2 + q3) + cos(q1)*cos(q4))*sin(q6), -((sin(q1)*sin(q2 + q3)*cos(q4) - sin(q4)*cos(q1))*cos(q5) + sin(q1)*sin(q5)*cos(q2 + q3))*sin(q6) - (sin(q1)*sin(q4)*sin(q2 + q3) + cos(q1)*cos(q4))*cos(q6), -(sin(q1)*sin(q2 + q3)*cos(q4) - sin(q4)*cos(q1))*sin(q5) + sin(q1)*cos(q5)*cos(q2 + q3), (1.25*sin(q2) - 0.054*sin(q2 + q3) + 1.5*cos(q2 + q3) + 0.35)*sin(q1)], [-(sin(q5)*sin(q2 + q3) - cos(q4)*cos(q5)*cos(q2 + q3))*cos(q6) - sin(q4)*sin(q6)*cos(q2 + q3), (sin(q5)*sin(q2 + q3) - cos(q4)*cos(q5)*cos(q2 + q3))*sin(q6) - sin(q4)*cos(q6)*cos(q2 + q3), -sin(q5)*cos(q4)*cos(q2 + q3) - sin(q2 + q3)*cos(q5), -1.5*sin(q2 + q3) + 1.25*cos(q2) - 0.054*cos(q2 + q3) + 0.75], [0, 0, 0, 1]])
             R3_6 = Matrix([[-1.0*sin(q4)*sin(q6) + 1.0*cos(q4)*cos(q5)*cos(q6), -1.0*sin(q4)*cos(q6) - 1.0*sin(q6)*cos(q4)*cos(q5), -1.0*sin(q5)*cos(q4)], [sin(q5)*cos(q6), -sin(q5)*sin(q6), cos(q5)], [-sin(q4)*cos(q5)*cos(q6) - sin(q6)*cos(q4), sin(q4)*sin(q6)*cos(q5) - cos(q4)*cos(q6), sin(q4)*sin(q5)]])
+            T0_G = Matrix([[((sin(q1)*sin(q4) + sin(q2 + q3)*cos(q1)*cos(q4))*cos(q5) + sin(q5)*cos(q1)*cos(q2 + q3))*cos(q6) + (sin(q1)*cos(q4) - sin(q4)*sin(q2 + q3)*cos(q1))*sin(q6), -((sin(q1)*sin(q4) + sin(q2 + q3)*cos(q1)*cos(q4))*cos(q5) + sin(q5)*cos(q1)*cos(q2 + q3))*sin(q6) + (sin(q1)*cos(q4) - sin(q4)*sin(q2 + q3)*cos(q1))*cos(q6), -(sin(q1)*sin(q4) + sin(q2 + q3)*cos(q1)*cos(q4))*sin(q5) + cos(q1)*cos(q5)*cos(q2 + q3), -0.303*(sin(q1)*sin(q4) + sin(q2 + q3)*cos(q1)*cos(q4))*sin(q5) + (1.25*sin(q2) - 0.054*sin(q2 + q3) + 1.5*cos(q2 + q3) + 0.35)*cos(q1) + 0.303*cos(q1)*cos(q5)*cos(q2 + q3)], [((sin(q1)*sin(q2 + q3)*cos(q4) - sin(q4)*cos(q1))*cos(q5) + sin(q1)*sin(q5)*cos(q2 + q3))*cos(q6) - (sin(q1)*sin(q4)*sin(q2 + q3) + cos(q1)*cos(q4))*sin(q6), -((sin(q1)*sin(q2 + q3)*cos(q4) - sin(q4)*cos(q1))*cos(q5) + sin(q1)*sin(q5)*cos(q2 + q3))*sin(q6) - (sin(q1)*sin(q4)*sin(q2 + q3) + cos(q1)*cos(q4))*cos(q6), -(sin(q1)*sin(q2 + q3)*cos(q4) - sin(q4)*cos(q1))*sin(q5) + sin(q1)*cos(q5)*cos(q2 + q3), -0.303*(sin(q1)*sin(q2 + q3)*cos(q4) - sin(q4)*cos(q1))*sin(q5) + (1.25*sin(q2) - 0.054*sin(q2 + q3) + 1.5*cos(q2 + q3) + 0.35)*sin(q1) + 0.303*sin(q1)*cos(q5)*cos(q2 + q3)], [-(sin(q5)*sin(q2 + q3) - cos(q4)*cos(q5)*cos(q2 + q3))*cos(q6) - sin(q4)*sin(q6)*cos(q2 + q3), (sin(q5)*sin(q2 + q3) - cos(q4)*cos(q5)*cos(q2 + q3))*sin(q6) - sin(q4)*cos(q6)*cos(q2 + q3), -sin(q5)*cos(q4)*cos(q2 + q3) - sin(q2 + q3)*cos(q5), -0.303*sin(q5)*cos(q4)*cos(q2 + q3) - 0.303*sin(q2 + q3)*cos(q5) - 1.5*sin(q2 + q3) + 1.25*cos(q2) - 0.054*cos(q2 + q3) + 0.75], [0, 0, 0, 1]])
 
         else:
             # Define Modified DH Transformation matrix
@@ -154,7 +155,7 @@ def handle_calculate_IK(req):
         # Initialize service response
         joint_trajectory_list = []
         for x in xrange(0, len(req.poses)):
-            print("Inverting pose %s of %s" % (x, len(req.poses)))
+            print("Inverting pose %s of %s" % (x+1, len(req.poses)))
             # IK code starts here
             joint_trajectory_point = JointTrajectoryPoint()
 
@@ -180,79 +181,71 @@ def handle_calculate_IK(req):
 
             # Calculate joint angles using Geometric IK method
             theta1 = atan2(wy, wx)
+            theta1p = theta1 - pi
 
-            # link2 origin as offset
-            pz = wz - 0.75
-            # project wx, wy into z-y-plane
-            px = sqrt(wx ** 2 + wy ** 2) - 0.35
-            l2 = 1.25
-            l3 = 1.50
-            max_length_of_arms = l2 + l3
-            beta = atan2(pz, px)
-            lp = sqrt(pz ** 2 + px ** 2)
+            WC = [wx, wy, wz]
+            link3 = 1.501  # d4
+            side_b = sqrt((sqrt(wx ** 2 + wy ** 2) - 0.35) ** 2 + (wz - 0.75) ** 2)
+            link2 = 1.25  # a2
+            beta = atan2(wz - 0.75, sqrt(wx ** 2 + wy ** 2) - 0.35)
 
-            if lp == max_length_of_arms:
-                # arms must be fully extended
-                theta3 = pi / 2
-                theta2 = pi / 2 - beta
-                print("Arm fully extended")
+            # two possible solutions for each angle
+            angle_a = acos((side_b ** 2 + link2 ** 2 - link3 ** 2) / (2 * side_b * link2))
+            angle_ap = - angle_a
+            angle_b = acos((link3 ** 2 + link2 ** 2 - side_b ** 2) / (2 * link3 * link2))
+            angle_bp = - angle_b
+            angle_c = acos((link3 ** 2 + side_b ** 2 - link2 ** 2) / (2 * link3 * side_b))
 
-            elif lp > max_length_of_arms:
-                # point is out of reach
-                theta3 = 0
-                theta2 = 0
-                print("WC coordinates are out of reach: %s %s %s" % (wx, wy, wz))
+            theta2 = pi / 2 - angle_a - beta
+            theta2p = pi / 2 - angle_ap - beta
+            theta3 = pi / 2 - (angle_b + 0.036)  # 0.036 accounts for sag in link4 of -0.054
+            theta3p = pi / 2 - (angle_bp + 0.036)  # 0.036 accounts for sag in link4 of -0.054
 
-            else:
-                # c3 = (px**2 + pz**2 - l2**2 - l3**2)/(2*l2*l3)
-                # s3 = sqrt(1.0 - c3**2)
-                # s3_alt = - s3
-                # a = atan2(s3, c3)
-                # a_alt = atan2(s3_alt, c3)
-                #
-                # b = atan2(l3 * sin(a), l2 + l3 * cos(a))
-                # b_alt = atan2(l3 * sin(a_alt), l2 + l3 * cos(a_alt))
-                #
-                # theta2 = pi/2 - beta - b
-                # theta2_alt = pi/2 - beta - b_alt
-                #
-                # theta3 = pi / 2 - a
-                # theta3_alt = pi / 2 - a_alt
-
-                WC = [wx, wy, wz]
-                side_a = 1.501  # d4
-                side_b = sqrt((sqrt(wx ** 2 + wy ** 2) - 0.35) ** 2 + (wz - 0.75) ** 2)
-                side_c = 1.25  # a2
-
-                angle_a = acos((side_b ** 2 + side_c ** 2 - side_a ** 2) / (2 * side_b * side_c))
-                angle_b = acos((side_a ** 2 + side_c ** 2 - side_b ** 2) / (2 * side_a * side_c))
-                angle_c = acos((side_a ** 2 + side_b ** 2 - side_c ** 2) / (2 * side_a * side_b))
-
-                theta2 = pi / 2 - angle_a - atan2(wz - 0.75, sqrt(wx ** 2 + wy ** 2) - 0.35)
-                theta3 = pi / 2 - (angle_b + 0.036)  # 0.036 accounts for sag in link4 of -0.054
+            # ca = (side_b ** 2 + link2 ** 2 - link3 ** 2) / (2 * side_b * link2)
+            # sa = sqrt(1.0 - ca**2)
+            # sa_alt = - sa
+            # a = atan2(sa, ca)
+            # a_alt = atan2(sa_alt, ca)
+            #
+            # b = atan2(link3 * sin(a), link2 + link3 * cos(a))
+            # b_alt = atan2(link3 * sin(a_alt), link2 + link3 * cos(a_alt))
+            #
+            # theta2 = pi/2 - beta - b
+            # theta2_alt = pi/2 - beta - b_alt
+            #
+            # theta3 = pi / 2 - a
+            # theta3_alt = pi / 2 - a_alt
 
             subs = {q1: theta1, q2: theta2, q3: theta3}
+            subs_alt = {q1: theta1, q2: theta2p, q3: theta3p}
 
             R0_3 = T0_3[:3, :3]
             R0_3_num = R0_3.evalf(subs=subs)
+            R0_3_num_alt = R0_3.evalf(subs=subs_alt)
             Rrpy3x3 = Rrpy[:3, :3]
 
             R3_6_num = R0_3_num.inv('LU') * Rrpy3x3
+            R3_6_num_alt = R0_3_num_alt.inv('LU') * Rrpy3x3
             if not use_precomputed_transforms:
                 R0_6 = T0_6[:3, :3]
                 R3_6 = R0_3.inv('LU') * R0_6
                 R3_6 = simplify(R3_6.evalf(subs=subs))
 
             theta4 = atan2(R3_6_num[2, 2], - R3_6_num[0, 2])
-            theta5 = atan2(sqrt(R3_6_num[1, 0] ** 2 + (-R3_6_num[1, 1]) ** 2), R3_6_num[1, 2])
+            theta5 = atan2(sqrt(R3_6_num[0, 2] ** 2 + R3_6_num[2, 2] ** 2), R3_6_num[1, 2])
+            theta5_alt = atan2(sqrt(R3_6_num[1, 0] ** 2 + (-R3_6_num[1, 1]) ** 2), R3_6_num[1, 2])
             theta6 = atan2(- R3_6_num[1, 1], R3_6_num[1, 0])
+
+            theta4p = atan2(R3_6_num_alt[2, 2], - R3_6_num_alt[0, 2])
+            theta5p = atan2(sqrt(R3_6_num_alt[0, 2] ** 2 + R3_6_num_alt[2, 2] ** 2), R3_6_num_alt[1, 2])
+            theta6p = atan2(- R3_6_num_alt[1, 1], R3_6_num_alt[1, 0])
 
             # evaluate with angles from inverse kinematics
             subs = {q1: theta1, q2: theta2, q3: theta3, q4: theta4, q5: theta5, q6: theta6}
             # EE
-            T_total_num = T_total.evalf(subs=subs)
+            T0_EE = T0_G.evalf(subs=subs)
 
-            your_ee = T_total_num[:3, 3]  # <--- Load your calculated end effector value from your forward kinematics
+            your_ee = T0_EE[:3, 3]  # <--- Load your calculated end effector value from your forward kinematics
             ee_x_e = abs(your_ee[0] - px)
             ee_y_e = abs(your_ee[1] - py)
             ee_z_e = abs(your_ee[2] - pz)
@@ -265,9 +258,21 @@ def handle_calculate_IK(req):
             else:
                 print("EE OK, at %s" % your_ee)
 
+            alt_thetas = [theta1p, theta2p, theta3p, theta4p, theta5p, theta6p]
             # Populate response for the IK request
             # In the next line replace theta1,theta2...,theta6 by your joint angle variables
             joint_trajectory_point.positions = [theta1, theta2, theta3, theta4, theta5, theta6]
+            # try not to rotate too much
+            if len(joint_trajectory_list) > 0:
+                for i in range(len(joint_trajectory_point.positions)):
+                    theta = joint_trajectory_point.positions[i]
+                    prev_theta = joint_trajectory_list[-1].positions[i]
+
+                    if abs(prev_theta - theta) > 1:
+                        theta = alt_thetas[i]
+
+                    joint_trajectory_point.positions[i] = theta
+
             joint_trajectory_list.append(joint_trajectory_point)
 
         rospy.loginfo("length of Joint Trajectory List: %s" % len(joint_trajectory_list))
