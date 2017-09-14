@@ -21,8 +21,8 @@
 [image2]: ./misc_images/misc3.png
 [image3]: ./misc_images/misc2.png
 [reference_frames]: reference_frames2.jpg
-[inverse_position]: inverse_position.png
-[inverse_orientation]: inverse_orientation.png
+[inverse_position]: inverse_position2.jpg
+[inverse_orientation]: inverse_orientation2.jpg
 
 ## [Rubric](https://review.udacity.com/#!/rubrics/972/view) Points
 ### Here I will consider the rubric points individually and describe how I addressed each point in my implementation.  
@@ -107,6 +107,7 @@ First we obtain the position of the wrist center (global reference frame).
     wz = pz - (d6 + ee_length) * nz
 
 Now we can compute the angles necessary to obtain the given position of the wrist center (theta{1,2,3}).
+
 ![alt text][inverse_position]
 
 The angles of the wrist (theta{4,5,6}) to obtain the given orientation of the end-effector are acquired by solving the inverse orientation problem.
