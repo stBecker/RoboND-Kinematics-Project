@@ -157,8 +157,8 @@ def handle_calculate_IK(req):
         for x in xrange(0, len(req.poses)):
             print("Inverting pose %s of %s" % (x+1, len(req.poses)))
 
-	    # ignore everything but the last request
-            if 2 < x < len(req.poses)-3:
+            # ignore intermediate position requests, they just slow everything down unnecessarily
+            if 1 < x < len(req.poses) - 2:
                 continue
 
             # IK code starts here
