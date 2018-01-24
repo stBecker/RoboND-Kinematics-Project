@@ -5,9 +5,9 @@
 
 [//]: # (Image References)
 
-[reference_frames]: reference_frames2.jpg
-[inverse_position]: inverse_position2.jpg
-[inverse_orientation]: inverse_orientation2.jpg
+[reference_frames]: writeup/reference_frames2.jpg
+[inverse_position]: writeup/inverse_position2.jpg
+[inverse_orientation]: writeup/inverse_orientation2.jpg
 
 ---
 
